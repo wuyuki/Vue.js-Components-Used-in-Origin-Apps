@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pagination</title>
+
+    <style>
+        body {
+            font-size: 18px;
+            color: #566270;
+            background-color: #fffff3;
+            margin: 0;
+            overflow: hidden;
+        }
+        /* pagination */
+        .page{
+            margin: 5em 5em;
+        }
+        .page span{
+            font-weight: 600;
+        }
+        .page a{
+            color: #566270;
+            font-weight: 600;
+            margin: 0.2em 0.5em;
+            cursor: pointer;
+        }
+        .page a.selected{
+            color: #a593e0;
+            text-decoration: underline;
+        }
+        .page a.disabled{
+            color: #e0e3da;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+    /* end pagination */
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <pagination :header="'Pages'" 
+                    :total_pages="62" 
+                    :max_visible_page_number="10" 
+                    :current_page="1" 
+                    @update_current_page="onClickPaginationButton">
+        </pagination>
+    </div>  
+</body>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+
+<script type="text/x-template" id="pagination">
+    <div class="page">
+        <span>{{header}}</span>
+        <a title="Go to the first page" @click="onClickFirstPage" v-bind:class="{disabled: current_page == 1}"><<</a>
+        <a title="Go to previours page" @click="onClickPreviousPage" v-bind:class="{disabled: current_page == 1}"><</a>
+        <a v-for="page in pages" v-bind:class="{selected: current_page == page}" @click="onClickPage(page)">{{page}}</a>
+        <a title="Go to next page" @click="onClickNextPage" v-bind:class="{disabled: current_page == total_pages}">></a>
+        <a title="Go to the last page" @click="onClickLastPage" v-bind:class="{disabled: current_page == total_pages}">>></a>
+    </div>
+</script>
+<script>
+    Vue.component('pagination', {
+        template: '#pagination',
+        props: {
+            header: String,
+            total_pages: Number,
+            max_visible_page_number: Number,
+            current_page: Number,
+        },
+        data:function() {
+            return {
+            }
+        },
+        computed: {
+            startPage: function(){
+                if(this.current_page < this.max_visible_page_number)
+                    return 1;
+                if(this.current_page % this.max_visible_page_number == 0)
+                    return this.current_page - this.max_visible_page_number + 1;
+                return (parseInt(this.current_page/this.max_visible_page_number) * this.max_visible_page_number) + 1;
+            },
+            endPage:function(){   
+                return Math.min(this.startPage + this.max_visible_page_number - 1, this.total_pages);
+            },
+            pages:function() {
+                const range = [];
+                for (let ii = this.startPage; ii <= this.endPage; ii++) 
+                    range.push(ii);
+                return range;
+            },
+        },
+        methods: {
+            onClickFirstPage:function() {
+                this.current_page = 1;
+            },
+            onClickPreviousPage:function() {
+                this.current_page = this.current_page - 1 <=0? 1 : this.current_page - 1;
+            },
+            onClickPage:function(page) {
+                this.current_page = page;
+            },
+            onClickNextPage:function() {
+                this.current_page  = this.current_page + 1 > this.total_pages? this.total_pages : this.current_page + 1;
+            },
+            onClickLastPage:function() {
+                this.current_page = this.total_pages; 
+                console.log(this.current_page);
+            },
+        },
+        watch: {
+            current_page:function(){
+                this.$emit('update_current_page', this.current_page);    
+            }
+        }
+    })
+</script>
+
+<script>
+    var Main = {
+        data: function () {
+            return { 
+            }
+        },
+        methods: {
+            onClickPaginationButton:function(page){
+                console.log(page);
+            }
+        }
+    };
+    var Component = Vue.extend(Main);
+    var mainComponent = new Component().$mount("#app");
+</script>
+</html>
