@@ -1,4 +1,4 @@
-## Vue.js Component Used in Origin Apps
+## Vue.js Components Used in Origin Apps
 
 ### Introduction
 Vue.js components allow us to split the HTML dialog into independent and reusable pieces, but Vue provides few built-in components that cannot cover various UI designs. Although we can introduce other MIT-licensed UI component frameworks into apps, this will also increase the file size. It seems unacceptable that we use only one component but end up with a large-size opx file.
