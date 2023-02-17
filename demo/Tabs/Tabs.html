@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tabs</title>
+
+    <style>
+        body {
+            font-size: 12px;
+            color: #566270;
+            margin: 0;
+            overflow: hidden;
+        }
+    /* tabs */
+        div.tabs{
+            margin: 0.5em;
+            vertical-align: top;
+            background-color: #fffff3;
+            border: 2px solid #e0e3da;
+        }
+        ul.tabs_header {
+            display: block;
+            margin: 0;
+            border-bottom: 1px dashed #e0e3da;
+            cursor: pointer;
+            padding: 1em 1em;
+            transition: 0.3s;
+        }
+        ul.tabs_header > li {
+            display: inline-block;
+            padding: 0 2em;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        ul.tabs_header > li:hover {
+            background-color: rgba(165, 147, 224, 0.3);
+
+        }
+        ul.tabs_header > li.tab_selected {
+            text-decoration: underline;
+            color: #a593e0; 
+        }
+        .tab {
+            display: inline-block;
+            padding: 1em 2em;
+        }
+    /* end tabs */
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <tabs>
+            <tab title="London">
+                <div>
+                    <h3>London</h3>
+                    <p>London is the capital city of England.</p>
+                </div>
+            </tab>
+            <tab title="Paris">
+                <div>
+                    <h3>Paris</h3>
+                    <p>Paris is the capital of France.</p>
+                </div>
+            </tab>
+            <tab title="Tokyo">
+                <div>
+                    <h3>Tokyo</h3>
+                    <p>Tokyo is the capital of Japan.</p>
+                </div>
+            </tab>
+        </tabs>
+    </div>  
+</body>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+
+<script type="text/x-template" id="tabs-template">
+    <div class="tabs">
+        <ul class='tabs_header'>
+            <li v-for='(tab, index) in tabs'
+                :key='tab.title'
+                @click='selectTab(index)'
+                :class='{"tab_selected": (index == selectedIndex)}'>
+                {{tab.title}}
+            </li>
+        </ul>
+        <slot></slot>
+    </div>
+</script>
+<script>
+    Vue.component('tabs', {
+        template: '#tabs-template',
+        props: {},
+        data:function() {
+            return {
+                selectedIndex: 0, // the index of the selected tab,
+                tabs: []         // all of the tabs
+            }
+        },
+        created:function () {
+            this.tabs = this.$children
+        },
+        mounted:function () {
+            this.selectTab(0)
+        },
+        methods: {
+            selectTab:function(i) {
+                this.selectedIndex = i
+                // loop over all the tabs
+                this.tabs.forEach(function(tab, index){
+                    if(index === i)
+                        tab.isActive = true;
+                    else
+                        tab.isActive = false;
+                });
+            }
+        }
+    })    
+</script>
+    
+<script type="text/x-template" id="tab-template">
+    <div class='tab' v-show='isActive'>
+        <slot></slot>
+    </div>
+</script>
+<script>
+    Vue.component('tab', {
+        template: '#tab-template',
+        props: {
+            title: {
+                type: String,
+                default: 'Tab'
+            }
+        },
+        data:function(){
+            return {
+                isActive: true
+            }
+        }
+    }) 
+</script>
+
+
+<script>
+    var Main = {
+        data: function () {
+            return {}
+        },
+        methods: {}
+    };
+    var Component = Vue.extend(Main);
+    var mainComponent = new Component().$mount("#app");
+</script>
+</html>
