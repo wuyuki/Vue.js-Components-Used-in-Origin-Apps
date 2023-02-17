@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dropdown Menu</title>
+
+    <style>
+        body {
+            font-size: 18px;
+            color: #566270;
+            background-color: #fffff3;
+            margin: 0;
+            overflow: hidden;
+        }
+        /* Navbar */
+        .navbar {
+                overflow: hidden;
+                background-color: #566270;
+        }
+        .dropdown {
+            float: left;
+            overflow: hidden;
+            text-align: left;
+            margin-right: 0.2em;
+            cursor: pointer;
+        }
+        .dropdown .dropbtn {
+            border: none;
+            outline: none;
+            color: #fffff3;
+            padding: 1em 0.5em;
+            background-color: inherit;
+            font-family: inherit; 
+            font-size: 1.2em;
+            font-weight: 600;
+            margin: 0; 
+        }
+        .dropdown .caret-down{
+            font-size: 6px;
+        }
+        .dropdown:hover {
+            background-color: #a593e0;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #e0e3da;
+            min-width: 10em;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+        .dropdown-content a {
+            padding: 0.5em 1em;
+            text-decoration: none;
+            display: block;
+            font-weight: 600;
+        }
+        .dropdown-content a:hover {
+            /* background-color: #dddfe6; */
+            color: #a593e0;
+            font-weight: bolder;
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        .active {
+            background-color: rgba(165, 147, 224, 0.2);
+            font-weight: bold;
+        }
+        .dropdown-sub-content{
+            /* background-color: #dddfe6; */
+            background-color: rgba(165, 147, 224, 0.05);
+        }
+        .dropdown-sub-content a{
+            padding: 0.5em 2.5em;
+            font-weight: 500;
+            color: #566270;
+        }
+        .dropdown-sub-content a:hover{
+            color: rgba(165, 147, 224, 0.6);
+        }
+        /* END Navbar*/
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <navbar :menu="menu_data" 
+                :selected_menu="selected_menu"
+                @update_selected_menu="onSelectMenu">
+        </navbar>
+    </div>  
+</body>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+
+<script type="text/x-template" id="navbar-template">
+    <div class="navbar">
+        <div class="dropdown" v-for="item in menu.children">
+            <button class="dropbtn">
+                {{item.name}}
+            </button>
+            <div class="dropdown-content">
+                <a v-for="sub_item in item.children">
+                    <a :class="{active: active_sub_item == sub_item.name && sub_item.children}" @click="onClickSubMenu(item, sub_item)">
+                        {{sub_item.name}}
+                        <span class="caret-down" v-if="sub_item.children">&#9660;</span>
+                    </a>
+                    <div class="dropdown-sub-content" v-if="active_sub_item == sub_item.name">
+                        <a href="#" v-for="three_level_item in sub_item.children"
+                            @click="onClickThreeLevelMenu(item, sub_item, three_level_item)">
+                            {{three_level_item.name}}
+                        </a>
+                    </div>
+                </a> 
+            </div>
+        </div>
+    </div>
+</script>
+<script>
+Vue.component("navbar", {
+    template: "#navbar-template",
+    props: {
+        menu: Object,
+        selected_menu: Array,
+    },
+    data: function () {
+        return {
+            active_sub_item: "",
+        }
+    },
+    computed: {
+        selected: function() {
+            return [this.selected_menu, this.selected_sub_menu, this.selected_three_level_menu];
+        }
+    },
+    methods: {
+        onClickSubMenu: function(item, sub_item){
+            if(this.active_sub_item == sub_item.name)
+                this.active_sub_item = "";
+            else
+                this.active_sub_item = sub_item.name;
+            if(sub_item.children === undefined){
+                const items = [item.name, sub_item.name, ""]
+                this.selected_menu = items;
+            }
+        },
+        onClickThreeLevelMenu:function(item, sub_item, three_level_item){
+            const items = [item.name, sub_item.name, three_level_item.name]
+            this.selected_menu = items;
+        }
+    },
+    watch: {
+        selected_menu:function(){
+            this.$emit("update_selected_menu", this.selected_menu);
+        }
+    },
+})
+</script>
+
+<script>
+    var Main = {
+        data: function () {
+            return { 
+                menu_data: {
+                    name: "Menu",
+                    children: [
+                        {   name: "File",
+                            children: [
+                                {
+                                    name: "New",
+                                    children: [{name: "New File"},{name: "New Window"},]
+                                },
+                                {
+                                    name: "Open",
+                                    children: [{name: "Open Folder"},{name: "Open File"}]
+                                },
+                                {   name: "Close"},
+                            ]
+                        },
+                        {
+                            name: "Edit",
+                            children: [
+                                {name: "Undo"},
+                                {name: "Redo"},
+                                {name: "Find"}
+                            ]
+                        },
+                        {
+                            name: "Help",
+                            children: [
+                                {name: "Help"},
+                                {name: "About"},
+                            ]
+                        },
+                    ]
+                },
+            }
+        },
+        methods: {
+            onSelectMenu:function(new_selected_menu){
+                this.selected_menu = new_selected_menu;
+                console.log(this.selected_menu);
+            },
+        }
+    };
+    var Component = Vue.extend(Main);
+    var mainComponent = new Component().$mount("#app");
+</script>
+</html>
