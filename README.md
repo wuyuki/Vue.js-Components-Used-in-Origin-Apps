@@ -3,7 +3,7 @@
 ### Introduction
 Vue.js components allow us to split the HTML dialog into independent and reusable pieces, but Vue provides few built-in components that cannot cover various UI designs. Although we can introduce other MIT-licensed UI component frameworks into apps, this will also increase the file size. It seems unacceptable that we use only one component but end up with a large-size opx file.
 
-In general, we implement our own component model that allows us to encapsulate custom content and logic, but luckily we can reuse these components in different Apps.
+In general, we have to implement our own component model that allows us to encapsulate custom content and logic, but luckily we can reuse these components in different Apps.
 
 I am collecting some commonly used components that I created. Hope this can help us to build HTML dialog for apps easily.
 
